@@ -14,8 +14,14 @@ public class Game extends Canvas implements Runnable {
 
     private BufferedImage image;
 
+    private Spritesheet sheet;
+    private BufferedImage player;
+    private int x = 0;
+
     //metodo construtor da classe principal(Game)
     public Game() {
+        sheet = new Spritesheet("/spritesheet.png");//pegando a spritesheet inteira e trazendo pro jogo
+        player = sheet.getSprite(0, 0, 16, 16);//recortando a spritesheet pra aparecer só o player
         setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
         initFrame();
         image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -56,7 +62,7 @@ public class Game extends Canvas implements Runnable {
 
     //atualizando o jogo(logica)
     public void tick() {
-
+        x++;
     }
 
     //renderizando o jogo(graficos)
@@ -68,27 +74,34 @@ public class Game extends Canvas implements Runnable {
             return;
         }
         Graphics g = image.getGraphics();
-        g.setColor(new Color(19, 19,19)); //cor da tela
+        g.setColor(Color.BLUE); //cor da tela
         g.fillRect(0, 0, WIDTH, HEIGHT); //formato e dimensoes da tela
 
         //renderizando outras imagens na tela(objetos)
-        g.setColor(Color.BLUE);
-        g.fillRect(20, 10, 80, 80);
-        g.setColor(Color.CYAN);
-        g.fillRect(0, 0, 20, 30);
-        g.setColor(Color.GREEN);
-        g.fillRect(80, 100, 60, 20);
-        g.setColor(Color.RED);
-        g.fillOval(105, 20, 50, 50);
+//        g.setColor(Color.BLUE);
+//        g.fillRect(20, 10, 80, 80);
+//        g.setColor(Color.CYAN);
+//        g.fillRect(0, 0, 20, 30);
+//        g.setColor(Color.GREEN);
+//        g.fillRect(80, 100, 60, 20);
+//        g.setColor(Color.RED);
+//        g.fillOval(105, 20, 50, 50);
 
         //adiciando palavras no jogo
-        g.setFont(new Font("Arial", Font.BOLD, 20));
+        g.setFont(new Font("Arial", Font.BOLD, 16));
         g.setColor(Color.WHITE);
-        g.drawString("hello world", 30, 90);
+        g.drawString("hello world", 10, 20);
 
+        //adicionando players ao jogo com sprites
+        g.drawImage(player, x, 40, null); //renderizando o player na tela
+        g.drawImage(player, 40, 80, null);
+        g.drawImage(player, x, 25, null);
+        g.drawImage(player, 90, 12, null);
+
+        g.dispose();//melhorar a performance
         g = bs.getDrawGraphics();
         g.drawImage(image, 0, 0, WIDTH*SCALE, HEIGHT*SCALE, null); //colocando a imagem pra ocupar toda tela
-        bs.show(); //mostrando a imagem na tela
+        bs.show(); //mostrando as imagens na tela
     }
 
     //loop principal do game
