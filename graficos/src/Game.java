@@ -15,13 +15,18 @@ public class Game extends Canvas implements Runnable {
     private BufferedImage image;
 
     private Spritesheet sheet;
-    private BufferedImage player;
-    private int x = 0;
+    private BufferedImage[] player;// array para comportar as animaçoes do player
+    private int frames = 0;
+    private int maxFrames = 10;//quanto menor mais rapido a animação
+    private int curAnimation = 0, maxAnimation = 3; //quantas animações vao ter
 
     //metodo construtor da classe principal(Game)
     public Game() {
         sheet = new Spritesheet("/spritesheet.png");//pegando a spritesheet inteira e trazendo pro jogo
-        player = sheet.getSprite(0, 0, 16, 16);//recortando a spritesheet pra aparecer só o player
+        player = new BufferedImage[3];//aqui ta dizendo que vai haver dois playes(duas animações)
+        player[0] = sheet.getSprite(0, 0, 16, 16);//recortando a spritesheet pra aparecer só o player
+        player[1] = sheet.getSprite(15, 0, 16, 16);
+        player[2] = sheet.getSprite(31, 0, 16, 16);
         setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
         initFrame();
         image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -62,7 +67,14 @@ public class Game extends Canvas implements Runnable {
 
     //atualizando o jogo(logica)
     public void tick() {
-        x++;
+        frames++;
+        if(frames > maxFrames){
+            frames = 0;
+            curAnimation++;
+            if(curAnimation >= maxAnimation) {
+                curAnimation = 0;
+            }
+        }
     }
 
     //renderizando o jogo(graficos)
@@ -92,11 +104,18 @@ public class Game extends Canvas implements Runnable {
         g.setColor(Color.WHITE);
         g.drawString("hello world", 10, 20);
 
+
         //adicionando players ao jogo com sprites
-        g.drawImage(player, x, 40, null); //renderizando o player na tela
-        g.drawImage(player, 40, 80, null);
-        g.drawImage(player, x, 25, null);
-        g.drawImage(player, 90, 12, null);
+        Graphics2D g2 = (Graphics2D) g; //criando animaçoes
+//      g2.rotate(Math.toRadians(45), 90 + 8, 90 + 8);//animação
+        g2.drawImage(player[curAnimation], 90, 90, null); //renderizando o player na tela
+
+        //deixando a tela do jogo mais escura
+//        g2.rotate(Math.toRadians(-45), 90 + 8, 90 + 8);
+//        g2.setColor(new Color(0, 0, 0, 180));
+//        g2.fillRect(0, 0, WIDTH, HEIGHT);
+
+
 
         g.dispose();//melhorar a performance
         g = bs.getDrawGraphics();
