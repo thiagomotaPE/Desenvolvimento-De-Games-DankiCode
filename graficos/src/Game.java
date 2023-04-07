@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 
 public class Game extends Canvas implements Runnable {
 
@@ -10,9 +12,13 @@ public class Game extends Canvas implements Runnable {
     private final int HEIGHT = 120;//altura da tela
     private final int SCALE = 3;//escala
 
+    private BufferedImage image;
+
+    //metodo construtor da classe principal(Game)
     public Game() {
         setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
         initFrame();
+        image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
     }
 
     //metodo que inicia a tela do jogo
@@ -35,7 +41,12 @@ public class Game extends Canvas implements Runnable {
 
     //desligando o jogo
     public synchronized void stop() {
-
+        isRunning = false;
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
     public static void main(String[] args) {
         Game game = new Game();
@@ -50,7 +61,18 @@ public class Game extends Canvas implements Runnable {
 
     //renderizando o jogo(graficos)
     public void render() {
-
+        //criando o fundo preto do jogo
+        BufferStrategy bs = this.getBufferStrategy();
+        if(bs == null) {
+            this.createBufferStrategy(3);
+            return;
+        }
+        Graphics g = image.getGraphics();
+        g.setColor(new Color(19, 19,19)); //cor da tela
+        g.fillRect(0, 0, WIDTH, HEIGHT); //formato e dimensoes da tela
+        g = bs.getDrawGraphics();
+        g.drawImage(image, 0, 0, WIDTH*SCALE, HEIGHT*SCALE, null); //colocando a imagem pra ocupar toda tela
+        bs.show(); //mostrando a imagem na tela
     }
 
     //loop principal do game
@@ -80,5 +102,6 @@ public class Game extends Canvas implements Runnable {
                 timer += 1000;
             }
         }
+        stop();
     }
 }
